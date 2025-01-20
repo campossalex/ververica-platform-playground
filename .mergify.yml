@@ -10,7 +10,6 @@ pull_request_rules:
     actions:
       queue:
         method: rebase
-        rebase_fallback: null
         name: default
     conditions:
       - label=ready-to-merge
@@ -19,11 +18,21 @@ pull_request_rules:
     actions:
       queue:
         method: rebase
-        rebase_fallback: null
         name: default
     conditions:
       - label!=conflicts
       - head~=mergify/bp
+  - name: backport 2.14
+    actions:
+      backport:
+        ignore_conflicts: true
+        branches:
+          - 'release-2.14'
+        assignees:
+          - '{{author}}'
+    conditions:
+      - merged
+      - label=release-2.14
   - name: backport 2.13
     actions:
       backport:
