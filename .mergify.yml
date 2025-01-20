@@ -1,27 +1,20 @@
-
----
 queue_rules:
-  - name: default
-    conditions:
-      - check-success=ci
-
-pull_request_rules:
-  - name: Auto-Merge on Label
-    actions:
-      queue:
-        method: rebase
-        name: default
-    conditions:
+  - name: duplicated default from Auto-Merge on Label
+    queue_conditions:
       - label=ready-to-merge
       - '#approved-reviews-by>=1'
-  - name: Auto-Merge Green Backports
-    actions:
-      queue:
-        method: rebase
-        name: default
-    conditions:
+    merge_conditions:
+      - check-success=ci
+    merge_method: rebase
+  - name: duplicated default from Auto-Merge Green Backports
+    queue_conditions:
       - label!=conflicts
       - head~=mergify/bp
+    merge_conditions:
+      - check-success=ci
+    merge_method: rebase
+
+pull_request_rules:
   - name: backport 2.14
     actions:
       backport:
@@ -176,3 +169,7 @@ pull_request_rules:
     conditions:
       - merged
       - label=release-2.1
+  - name: Auto-Merge Green Backports + Auto-Merge on Label
+    conditions: []
+    actions:
+      queue:
