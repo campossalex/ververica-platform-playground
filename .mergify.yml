@@ -10,7 +10,6 @@ pull_request_rules:
     actions:
       queue:
         method: rebase
-        rebase_fallback: null
         name: default
     conditions:
       - label=ready-to-merge
@@ -19,7 +18,6 @@ pull_request_rules:
     actions:
       queue:
         method: rebase
-        rebase_fallback: null
         name: default
     conditions:
       - label!=conflicts
