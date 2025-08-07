@@ -140,15 +140,10 @@ install_vvp() {
     # try installation once (aborts and displays license)
     helm_install_vvp $helm_additional_parameters
 
-    if prompt "Do you want to pass 'acceptCommunityEditionLicense=true'?"; then
       echo "Installing..."
       helm_install_vvp \
         --set acceptCommunityEditionLicense=true \
         $helm_additional_parameters
-    else
-      echo "Ververica Platform installation aborted."
-      exit 1
-    fi
   fi
 }
 
@@ -182,11 +177,6 @@ main() {
 
   echo "> Setting up Ververica Platform Playground in namespace '$VVP_NAMESPACE' with jobs in namespace '$JOBS_NAMESPACE'"
   echo "> The currently configured Kubernetes context is: $(kubectl config current-context)"
-
-  if ! prompt "Continue?"; then
-    echo "Ververica Platform setup aborted."
-    exit 1
-  fi
 
   echo "> Creating Kubernetes namespaces..."
   create_namespaces
