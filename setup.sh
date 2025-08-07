@@ -48,7 +48,7 @@ install_minio() {
     --namespace "vvp" \
     upgrade --install "minio" "minio" \
     --repo https://charts.helm.sh/stable \
-    --values values-minio.yaml
+    --values /root/ververica-platform-playground/values-minio.yaml
 }
 
 install_prometheus_operator() {
@@ -89,7 +89,7 @@ helm_install_vvp() {
   if [ -n "$VVP_CHART" ];  then
     helm_install vvp "$VVP_CHART" "$VVP_NAMESPACE" \
       --version "$VVP_CHART_VERSION" \
-      --values values-vvp.yaml \
+      --values /root/ververica-platform-playground/values-vvp.yaml \
       --set rbac.additionalNamespaces="{$JOBS_NAMESPACE}" \
       --set vvp.blobStorage.s3.endpoint="http://minio.$VVP_NAMESPACE.svc:9000" \
       "$@"
@@ -97,7 +97,7 @@ helm_install_vvp() {
     helm_install vvp ververica-platform "$VVP_NAMESPACE" \
       --repo https://charts.ververica.com \
       --version "$VVP_CHART_VERSION" \
-      --values values-vvp.yaml \
+      --values /root/ververica-platform-playground/values-vvp.yaml \
       --set rbac.additionalNamespaces="{$JOBS_NAMESPACE}" \
       --set vvp.blobStorage.s3.endpoint="http://minio.$VVP_NAMESPACE.svc:9000" \
       "$@"
