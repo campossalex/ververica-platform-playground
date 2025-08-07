@@ -217,6 +217,9 @@ main() {
   kubectl --namespace "$VVP_NAMESPACE" wait --timeout=5m --for=condition=ready pods --all
 
   echo "> Successfully set up the Ververica Platform Playground"
+
+  kubectl --namespace vvp port-forward services/vvp-ververica-platform  --address 0.0.0.0 8080:80 &
+  
 }
 
 main "$@"
