@@ -2,7 +2,6 @@ import time
 import json
 import sys
 import random
-from confluent_kafka import Producer
 from faker import Faker
 from datetime import datetime
 import argparse
