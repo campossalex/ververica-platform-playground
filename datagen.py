@@ -59,11 +59,7 @@ if __name__ == "__main__":
     COUNT = 100000000
 
     configs = {
-        'bootstrap_servers': KAFKA_BROKER + ":" + KAFKA_PORT,
-        'security_protocol': "SASL_SSL",
-        'sasl_mechanism': "SCRAM-SHA-256",
-        'sasl_plain_username': "superuser",
-        'sasl_plain_password': "secretpassword"
+        'bootstrap_servers': KAFKA_BROKER + ":" + KAFKA_PORT
     }
 
     send_transactions(
