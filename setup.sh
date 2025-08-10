@@ -206,6 +206,9 @@ main() {
     install_kibana || :
   fi
 
+  echo "> Installing Grafana..."
+  install_grafana || :
+    
   echo "> Installing MinIO..."
   install_minio || :
 
