@@ -183,29 +183,6 @@ main() {
   echo "> Creating Kubernetes namespaces..."
   create_namespaces
 
-  if [ -n "$install_metrics" ]; then
-    echo "> Installing metrics stack"
-
-    echo "> Installing Prometheus Operator, metrics Service, and ServiceMonitor..."
-    install_prometheus_operator || :
-
-    echo "> Installing Grafana..."
-    install_grafana || :
-  fi
-
-  if [ -n "$install_logging" ]; then
-    echo "> Installing logging stack"
-
-    echo "> Installing Elasticsearch..."
-    install_elasticsearch || :
-
-    echo "> Installing Fluentd..."
-    install_fluentd || :
-
-    echo "> Installing Kibana..."
-    install_kibana || :
-  fi
-
   echo "> Installing Grafana..."
   install_grafana || :
     
