@@ -63,7 +63,7 @@ install_prometheus_operator() {
 install_grafana() {
   helm_install grafana grafana "$VVP_NAMESPACE" \
     --repo https://grafana.github.io/helm-charts \
-    --values values-grafana.yaml
+    --values /root/ververica-platform-playground/values-grafana.yaml
 }
 
 install_elasticsearch() {
