@@ -37,8 +37,8 @@ vvp:
   ### See also: https://docs.ververica.com/platform_operations/advanced/sql.html
   sqlService:
     pool:
-      coreSize: 1
-      maxSize: 1
+      coreSize: 0.5
+      maxSize: 0.5
 
 blobStorageCredentials:
   s3:
