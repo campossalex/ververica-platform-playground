@@ -221,7 +221,11 @@ main() {
 
   echo "> Successfully set up the Ververica Platform Playground"
 
+  # route 8080 to vvp
   kubectl --namespace vvp port-forward services/vvp-ververica-platform  --address 0.0.0.0 8080:80 &
+
+  # route 9099 to grafana
+  kubectl --namespace vvp port-forward services/grafana  --address 0.0.0.0 9099:80 &
   
 }
 
