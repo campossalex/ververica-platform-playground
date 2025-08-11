@@ -51,37 +51,10 @@ install_minio() {
     --values /root/ververica-platform-playground/values-minio.yaml
 }
 
-install_prometheus_operator() {
-  helm_install prometheus-operator kube-prometheus-stack "$VVP_NAMESPACE" \
-    --repo https://prometheus-community.github.io/helm-charts \
-    --values values-prometheus-operator.yaml \
-    --set prometheusOperator.namespaces.additional="{$JOBS_NAMESPACE}" \
-
-  kubectl --namespace "$JOBS_NAMESPACE" apply -f prometheus-operator-resources/service-monitor.yaml
-}
-
 install_grafana() {
   helm_install grafana grafana "$VVP_NAMESPACE" \
     --repo https://grafana.github.io/helm-charts \
     --values /root/ververica-platform-playground/values-grafana.yaml
-}
-
-install_elasticsearch() {
-  helm_install elasticsearch elasticsearch "$VVP_NAMESPACE" \
-    --repo https://helm.elastic.co \
-    --values values-elasticsearch.yaml
-}
-
-install_fluentd() {
-  helm_install fluentd fluentd-elasticsearch "$VVP_NAMESPACE" \
-    --repo https://kokuwaio.github.io/helm-charts \
-    --values values-fluentd.yaml
-}
-
-install_kibana() {
-  helm_install kibana kibana "$VVP_NAMESPACE" \
-    --repo https://helm.elastic.co \
-    --values values-kibana.yaml
 }
 
 helm_install_vvp() {
@@ -124,28 +97,14 @@ install_vvp() {
   install_metrics="$2"
   install_logging="$3"
   helm_additional_parameters=
+  
+  # try installation once (aborts and displays license)
+  helm_install_vvp $helm_additional_parameters
 
-  if [ -n "$install_metrics" ]; then
-    helm_additional_parameters="${helm_additional_parameters} --values values-vvp-add-metrics.yaml"
-  fi
-
-  if [ -n "$install_logging" ]; then
-    helm_additional_parameters="${helm_additional_parameters} --values values-vvp-add-logging.yaml"
-  fi
-
-  if [ "$edition" == "enterprise" ]; then
-    helm_install_vvp \
-      --values values-license.yaml \
-      $helm_additional_parameters
-  else
-    # try installation once (aborts and displays license)
-    helm_install_vvp $helm_additional_parameters
-
-      echo "Installing..."
-      helm_install_vvp \
-        --set acceptCommunityEditionLicense=true \
-        $helm_additional_parameters
-  fi
+  echo "Installing..."
+  helm_install_vvp \
+    --set acceptCommunityEditionLicense=true \
+     $helm_additional_parameters
 }
 
 main() {
@@ -198,10 +157,10 @@ main() {
   echo "> Successfully set up the Ververica Platform Playground"
 
   # route 8080 to vvp
-  kubectl --namespace vvp port-forward services/vvp-ververica-platform  --address 0.0.0.0 8080:80 &
+  #kubectl --namespace vvp port-forward services/vvp-ververica-platform  --address 0.0.0.0 8080:80 &
 
   # route 9099 to grafana
-  kubectl --namespace vvp port-forward services/grafana  --address 0.0.0.0 9099:80 &
+  #kubectl --namespace vvp port-forward services/grafana  --address 0.0.0.0 9099:80 &
   
 }
 
