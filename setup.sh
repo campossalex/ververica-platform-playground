@@ -161,6 +161,11 @@ main() {
 
   # route 9099 to grafana
   #kubectl --namespace vvp port-forward services/grafana  --address 0.0.0.0 9099:80 &
+
+  # Nodeport to access VVP and Grafana from browser
+  kubectl patch service vvp-ververica-platform -n vvp -p '{"spec": { "type": "NodePort", "ports": [ { "nodePort": 30002, "port": 80, "protocol": "TCP", "targetPort": 8080, "name": "vvp-np" } ] } }'
+
+  kubectl patch service grafana -n vvp -p '{"spec": { "type": "NodePort", "ports": [ { "nodePort": 30003, "port": 80, "protocol": "TCP", "targetPort": 3000, "name": "grafana-np" } ] } }'
   
 }
 
