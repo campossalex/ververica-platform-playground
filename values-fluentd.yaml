@@ -1,3 +1,0 @@
-elasticsearch:
-  hosts:
-  - "elasticsearch-master.vvp.svc:9200"
