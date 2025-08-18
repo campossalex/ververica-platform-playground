@@ -33,27 +33,6 @@ vvp:
             execution.checkpointing.interval: 10s
             execution.checkpointing.externalized-checkpoint-retention: RETAIN_ON_CANCELLATION
 
-  globalSessionClusterDefaults: |
-    spec:
-      state: RUNNING
-      template:
-        spec:
-          deploymentTargetName: jobs
-          numberOfTaskManagers: 1
-          resources:
-            jobmanager:
-              cpu: 0.5
-              memory: 1G
-            taskmanager:
-              cpu: 0.5
-              memory: 1G
-          flinkConfiguration:
-            state.backend: filesystem
-            flinkImageRegistry: registry.ververica.com/v2.12
-            flinkImageRepository: flink
-            flinkImageTag: 1.18.1-stream1-scala_2.12-java8
-            flinkVersion: '1.18'
-
   ### Decrease the JobGraph translation thread pool size. This reduces our worst-case memory
   ### requirements by reducing the number of translations that can happen in parallel.
   ###
