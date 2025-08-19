@@ -55,7 +55,7 @@ def main():
 
 # create products and propensity_to_buy lists from CSV data file
 def create_product_list():
-    with open("data/products.csv", "r") as csv_file:
+    with open("/root/ververica-platform-playground/salesgen/data/products.csv", "r") as csv_file:
         next(csv_file)  # skip header row
         csv_reader = reader(csv_file)
         csv_products = list(csv_reader)
