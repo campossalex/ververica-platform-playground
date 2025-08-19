@@ -18,7 +18,7 @@ from models.purchase import Purchase
 from models.inventory import Inventory
 
 config = configparser.ConfigParser()
-config.read("/root/ververica-platform-playground/datagen/configuration/configuration.ini")
+config.read("/root/ververica-platform-playground/salesgen/configuration/configuration.ini")
 
 us_state_to_abbrev = config["SALES"]["us_state_to_abbrev"]
 
