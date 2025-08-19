@@ -20,28 +20,10 @@ from models.inventory import Inventory
 config = configparser.ConfigParser()
 config.read("configuration/configuration.ini")
 
-us_state_to_abbrev = ["AL","AK","AZ","AR","CA",
-"CO",
-"CT","DE","FL","GA","HI",
-"ID",
-"IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY","DC"]
+us_state_to_abbrev = ["AZ","CA","CO","ID","MO","NV","NM","OR","UT","WA","WY"]
 
-us_state_to_abbrev = [
-"AZ",
-"CA",
-"CO",
-"ID",
-"MO",
-"NV",
-"NM",
-"OR",
-"UT",
-"WA",
-"WY"]
+# *** CONFIGURATION **
 
-
-# *** CONFIGURATION ***
-topic_products = config["KAFKA"]["topic_products"]
 topic_purchases = config["KAFKA"]["topic_purchases"]
 topic_inventories = config["KAFKA"]["topic_inventories"]
 
