@@ -20,7 +20,7 @@ from models.inventory import Inventory
 config = configparser.ConfigParser()
 config.read("/root/ververica-platform-playground/datagen/configuration/configuration.ini")
 
-us_state_to_abbrev = ["AZ","CA","CO","ID","MO","NV","NM","OR","UT","WA","WY"]
+us_state_to_abbrev = config["SALES"]["us_state_to_abbrev"]
 
 # *** CONFIGURATION **
 
