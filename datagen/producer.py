@@ -91,7 +91,7 @@ def generate_sales():
     range_max = propensity_to_buy_range[-1]
     for x in range(0, number_of_sales):
         # common for each transaction's line items
-        transaction_time = str(datetime.utcnow())
+        transaction_time = datetime.now().isoformat(" ", "milliseconds")
         is_member = random_club_member()
         member_discount = club_member_discount if is_member else 0.00
 
