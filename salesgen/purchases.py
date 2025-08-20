@@ -52,6 +52,9 @@ def main():
     create_product_list()
     generate_sales()
 
+    configs = get_configs()
+    print("configs: {0}".format(str(configs)))
+
 
 # create products and propensity_to_buy lists from CSV data file
 def create_product_list():
