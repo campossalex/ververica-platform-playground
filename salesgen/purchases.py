@@ -133,7 +133,6 @@ def generate_sales():
 
 # restock inventories
 def restock_item(product_id, state):
-    print(restock_amount)
     new_level = product_inventory[product_id][state] + restock_amount
     new_inventory = Inventory(
         str(datetime.utcnow()),
