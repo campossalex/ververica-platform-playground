@@ -9,6 +9,4 @@ def get_configs():
 
     configs = {"bootstrap_servers": bootstrap_servers}
 
-    print("configs: {0}".format(str(configs)))
-
     return configs
