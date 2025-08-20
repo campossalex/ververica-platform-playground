@@ -20,7 +20,8 @@ from models.inventory import Inventory
 config = configparser.ConfigParser()
 config.read("/root/ververica-platform-playground/salesgen/configuration/configuration.ini")
 
-us_state_to_abbrev = config["SALES"]["us_state_to_abbrev"]
+# USA states to generate data from
+us_state_to_abbrev = ["AZ","CA","CO","ID","MO","NV","NM","OR","UT","WA","WY"]
 
 # *** CONFIGURATION **
 
