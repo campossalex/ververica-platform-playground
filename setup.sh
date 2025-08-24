@@ -170,8 +170,8 @@ main() {
       sleep 1 
   done
 
-  curl -i  -X POST kubernetes-vm:30002/api/v1/namespaces/default/deployment-targets -H "Content-Type: application/yaml" --data-binary "@/root/ververica-platform-playground/vvp-resources/deployment_target.yaml"
-  curl -i  -X POST kubernetes-vm:30002/api/v1/namespaces/default/sessionclusters -H "Content-Type: application/yaml" --data-binary "@/root/ververica-platform-playground/vvp-resources/sessioncluster.yaml"
+  curl -i -X POST kubernetes-vm:30002/api/v1/namespaces/default/deployment-targets -H "Content-Type: application/yaml" --data-binary "@/root/ververica-platform-playground/vvp-resources/deployment_target.yaml"
+  curl -i -X POST kubernetes-vm:30002/api/v1/namespaces/default/sessionclusters -H "Content-Type: application/yaml" --data-binary "@/root/ververica-platform-playground/vvp-resources/sessioncluster.yaml"
   curl -i -X POST 'kubernetes-vm:30002/namespaces/v1/namespaces/default:setPreviewSessionCluster' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"previewSessionClusterName": "sql-editor"}'
 }
 
