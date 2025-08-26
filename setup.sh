@@ -6,6 +6,7 @@ set -o pipefail
 
 HELM=${HELM:-helm}
 VVP_CHART=${VVP_CHART:-}
+VVP_CHART_VERSION=${VVP_CHART_VERSION:-"5.8.1"}
 
 VVP_NAMESPACE=${VVP_NAMESPACE:-vvp}
 JOBS_NAMESPACE=${JOBS_NAMESPACE:-"vvp-jobs"}
@@ -43,59 +44,32 @@ helm_install() {
 }
 
 install_minio() {
-  helm_install minio minio "$VVP_NAMESPACE" \
+  helm \
+    --namespace "vvp" \
+    upgrade --install "minio" "minio" \
     --repo https://charts.helm.sh/stable \
-    --values values-minio.yaml
-}
-
-install_prometheus_operator() {
-  helm_install prometheus-operator kube-prometheus-stack "$VVP_NAMESPACE" \
-    --repo https://prometheus-community.github.io/helm-charts \
-    --values values-prometheus-operator.yaml \
-    --set prometheusOperator.namespaces.additional="{$JOBS_NAMESPACE}" \
-
-  kubectl --namespace "$JOBS_NAMESPACE" apply -f prometheus-operator-resources/service-monitor.yaml
+    --values /root/ververica-platform-playground/values-minio.yaml
 }
 
 install_grafana() {
   helm_install grafana grafana "$VVP_NAMESPACE" \
     --repo https://grafana.github.io/helm-charts \
-    --values values-grafana.yaml \
-    --set-file dashboards.default.flink-dashboard.json=grafana-dashboard.json
-}
-
-install_elasticsearch() {
-  helm_install elasticsearch elasticsearch "$VVP_NAMESPACE" \
-    --repo https://helm.elastic.co \
-    --values values-elasticsearch.yaml \
-    --version 7.9.2
-}
-
-install_fluentd() {
-  helm_install fluentd fluentd-elasticsearch "$VVP_NAMESPACE" \
-    --repo https://kokuwaio.github.io/helm-charts \
-    --values values-fluentd.yaml \
-    --version 13.2.0
-}
-
-install_kibana() {
-  helm_install kibana kibana "$VVP_NAMESPACE" \
-    --repo https://helm.elastic.co \
-    --values values-kibana.yaml \
-    --version 7.9.2
+    --values /root/ververica-platform-playground/values-grafana.yaml
 }
 
 helm_install_vvp() {
   if [ -n "$VVP_CHART" ];  then
     helm_install vvp "$VVP_CHART" "$VVP_NAMESPACE" \
-      --values values-vvp.yaml \
+      --version "$VVP_CHART_VERSION" \
+      --values /root/ververica-platform-playground/values-vvp.yaml \
       --set rbac.additionalNamespaces="{$JOBS_NAMESPACE}" \
       --set vvp.blobStorage.s3.endpoint="http://minio.$VVP_NAMESPACE.svc:9000" \
       "$@"
   else
     helm_install vvp ververica-platform "$VVP_NAMESPACE" \
       --repo https://charts.ververica.com \
-      --values values-vvp.yaml \
+      --version "$VVP_CHART_VERSION" \
+      --values /root/ververica-platform-playground/values-vvp.yaml \
       --set rbac.additionalNamespaces="{$JOBS_NAMESPACE}" \
       --set vvp.blobStorage.s3.endpoint="http://minio.$VVP_NAMESPACE.svc:9000" \
       "$@"
@@ -123,33 +97,14 @@ install_vvp() {
   install_metrics="$2"
   install_logging="$3"
   helm_additional_parameters=
+  
+  # try installation once (aborts and displays license)
+  helm_install_vvp $helm_additional_parameters
 
-  if [ -n "$install_metrics" ]; then
-    helm_additional_parameters="${helm_additional_parameters} --values values-vvp-add-metrics.yaml"
-  fi
-
-  if [ -n "$install_logging" ]; then
-    helm_additional_parameters="${helm_additional_parameters} --values values-vvp-add-logging.yaml"
-  fi
-
-  if [ "$edition" == "enterprise" ]; then
-    helm_install_vvp \
-      --values values-license.yaml \
-      $helm_additional_parameters
-  else
-    # try installation once (aborts and displays license)
-    helm_install_vvp $helm_additional_parameters
-
-    if prompt "Do you want to pass 'acceptCommunityEditionLicense=true'?"; then
-      echo "Installing..."
-      helm_install_vvp \
-        --set acceptCommunityEditionLicense=true \
-        $helm_additional_parameters
-    else
-      echo "Ververica Platform installation aborted."
-      exit 1
-    fi
-  fi
+  echo "Installing..."
+  helm_install_vvp \
+    --set acceptCommunityEditionLicense=true \
+     $helm_additional_parameters
 }
 
 main() {
@@ -183,37 +138,12 @@ main() {
   echo "> Setting up Ververica Platform Playground in namespace '$VVP_NAMESPACE' with jobs in namespace '$JOBS_NAMESPACE'"
   echo "> The currently configured Kubernetes context is: $(kubectl config current-context)"
 
-  if ! prompt "Continue?"; then
-    echo "Ververica Platform setup aborted."
-    exit 1
-  fi
-
   echo "> Creating Kubernetes namespaces..."
   create_namespaces
 
-  if [ -n "$install_metrics" ]; then
-    echo "> Installing metrics stack"
-
-    echo "> Installing Prometheus Operator, metrics Service, and ServiceMonitor..."
-    install_prometheus_operator || :
-
-    echo "> Installing Grafana..."
-    install_grafana || :
-  fi
-
-  if [ -n "$install_logging" ]; then
-    echo "> Installing logging stack"
-
-    echo "> Installing Elasticsearch..."
-    install_elasticsearch || :
-
-    echo "> Installing Fluentd..."
-    install_fluentd || :
-
-    echo "> Installing Kibana..."
-    install_kibana || :
-  fi
-
+  echo "> Installing Grafana..."
+  install_grafana || :
+    
   echo "> Installing MinIO..."
   install_minio || :
 
@@ -225,6 +155,24 @@ main() {
   kubectl --namespace "$VVP_NAMESPACE" wait --timeout=5m --for=condition=ready pods --all
 
   echo "> Successfully set up the Ververica Platform Playground"
+
+  # Nodeport to access VVP and Grafana from browser
+  echo "> Applying NodePort configuration..."
+  kubectl patch service vvp-ververica-platform -n vvp -p '{"spec": { "type": "NodePort", "ports": [ { "nodePort": 30002, "port": 80, "protocol": "TCP", "targetPort": 8080, "name": "vvp-np" } ] } }'
+  kubectl patch service grafana -n vvp -p '{"spec": { "type": "NodePort", "ports": [ { "nodePort": 30003, "port": 80, "protocol": "TCP", "targetPort": 3000, "name": "grafana-np" } ] } }'
+  kubectl patch service minio -n vvp -p '{"spec": { "type": "NodePort", "ports": [ { "nodePort": 30004, "port": 9000, "protocol": "TCP", "targetPort": 9000, "name": "minio-np" } ] } }'
+
+
+  # Create Deployment Target and Session Cluster
+  echo "> Creating Session Cluster..."
+  while ! curl --silent --fail --output /dev/null kubernetes-vm:30002/api/v1/status 
+  do
+      sleep 1 
+  done
+
+  curl -i -X POST kubernetes-vm:30002/api/v1/namespaces/default/deployment-targets -H "Content-Type: application/yaml" --data-binary "@/root/ververica-platform-playground/vvp-resources/deployment_target.yaml"
+  curl -i -X POST kubernetes-vm:30002/api/v1/namespaces/default/sessionclusters -H "Content-Type: application/yaml" --data-binary "@/root/ververica-platform-playground/vvp-resources/sessioncluster.yaml"
+  curl -i -X POST 'kubernetes-vm:30002/namespaces/v1/namespaces/default:setPreviewSessionCluster' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"previewSessionClusterName": "sql-editor"}'
 }
 
 main "$@"

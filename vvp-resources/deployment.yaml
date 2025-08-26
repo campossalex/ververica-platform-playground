@@ -11,7 +11,6 @@ spec:
       parallelism: 1
       artifact:
         kind: JAR
-        flinkVersion: '1.19'
+        flinkVersion: '1.13'
         jarUri: >-
-          https://repo1.maven.org/maven2/org/apache/flink/flink-examples-streaming/1.19.0/flink-examples-streaming-1.19.0-WindowJoin.jar
-
+          https://repo1.maven.org/maven2/org/apache/flink/flink-examples-streaming_2.12/1.13.1/flink-examples-streaming_2.12-1.13.1-TopSpeedWindowing.jar
