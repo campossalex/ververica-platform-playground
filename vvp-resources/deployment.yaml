@@ -14,4 +14,3 @@ spec:
         flinkVersion: '1.13'
         jarUri: >-
           https://repo1.maven.org/maven2/org/apache/flink/flink-examples-streaming_2.12/1.13.1/flink-examples-streaming_2.12-1.13.1-TopSpeedWindowing.jar
-
